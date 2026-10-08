@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+
+{% block title %}{{ item.title }} - Campus Lost & Found{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-6">
+
+    <!-- Top Navigation Breadcrumb -->
+    <div class="flex items-center justify-between">
+        <a href="{{ url_for('index') }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            <span>Back to Marketplace</span>
+        </a>
+
+        <!-- Status Tag -->
+        <div>
+            {% if item.status == 'resolved' %}
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700 border border-purple-200">
+                    <span class="w-2 h-2 rounded-full bg-purple-600"></span>
+                    Reunited / Returned 🎉
+                </span>
+            {% elif item.status == 'claim_pending' %}
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700 border border-amber-200">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    Claim Pending Review
+                </span>
+            {% else %}
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    Active & Available
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Resolved Banner if already returned -->
+    {% if item.status == 'resolved' %}
+        <div class="bg-gradient-to-r from-purple-900 to-indigo-900 text-white rounded-3xl p-6 sm:p-8 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center text-3xl shrink-0">
+                    🎉
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold">This item has been successfully reunited!</h2>
+                    <p class="text-purple-200 text-xs sm:text-sm mt-0.5">
+                        A verified proof of ownership was submitted and approved by the uploader. Thank you to the campus community!
+                    </p>
+                </div>
+            </div>
+            <a href="{{ url_for('post_item') }}" class="px-5 py-2.5 bg-white text-purple-950 font-bold text-xs rounded-xl hover:bg-purple-50 transition-colors shrink-0 shadow">
+                Post Another Item
+            </a>
+        </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+        <!-- Left Column: Item Image & Details (7 cols) -->
+        <div class="lg:col-span-7 space-y-6">
+
+            <!-- Item Main Showcase Card -->
+            <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden">
+                <!-- Image Header -->
+                <div class="relative h-72 sm:h-96 bg-slate-100">
+                    {% if item.image_url %}
+                        <img src="{{ item.image_url }}" alt="{{ item.title }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-50">
+                            <svg class="w-16 h-16 stroke-[1.2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span class="text-sm font-semibold mt-2 text-slate-400">No Image Provided</span>
+                        </div>
+                    {% endif %}
+
+                    <!-- Pill tags overlay -->
+                    <div class="absolute top-4 left-4 flex gap-2">
+                        {% if item.item_type == 'found' %}
+                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-600 text-white shadow-md">
+                                Found Item
+                            </span>
+                        {% else %}
+                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-600 text-white shadow-md">
+                                Lost Item
+                            </span>
+                        {% endif %}
+
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/95 text-slate-800 shadow-sm">
+                            {{ item.category }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Info Body -->
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                            {{ item.title }}
+                        </h1>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Reported on {{ item.created_at[:10] }} by {{ item.contact_name }}
+                        </p>
+                    </div>
+
+                    <!-- Meta details grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/80">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mt-0.5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Campus Location</p>
+                                <p class="text-sm font-bold text-slate-800 mt-0.5">{{ item.location }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Date Occurred</p>
+                                <p class="text-sm font-bold text-slate-800 mt-0.5">{{ item.date_occurred }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Item Description</h3>
+                        <p class="text-sm text-slate-700 leading-relaxed whitespace-pre-line bg-white p-4 rounded-2xl border border-slate-200">
+                            {{ item.description }}
+                        </p>
+                    </div>
+
+                    <!-- Finder / Uploader Contact (Visible if resolved or authorized) -->
+                    {% if is_authorized or item.status == 'resolved' %}
+                        <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs space-y-1">
+                            <p class="font-bold text-emerald-900 text-sm">Listed by Contact Details:</p>
+                            <p class="text-emerald-800"><span class="font-semibold">Name:</span> {{ item.contact_name }}</p>
+                            <p class="text-emerald-800"><span class="font-semibold">Email:</span> <a href="mailto:{{ item.contact_email }}" class="underline">{{ item.contact_email }}</a></p>
+                            {% if item.contact_phone %}
+                                <p class="text-emerald-800"><span class="font-semibold">Phone:</span> {{ item.contact_phone }}</p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Handover Safety Notice -->
+            <div class="bg-blue-50/70 border border-blue-200 rounded-2xl p-5 flex items-start gap-4 text-xs text-blue-900">
+                <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm text-blue-950 mb-1">Campus Safe Exchange Policy</h4>
+                    <p class="text-blue-800 leading-relaxed">
+                        Never meet alone in secluded areas. Always conduct handovers in public campus zones such as the <strong>Library Front Desk</strong>, <strong>Campus Security Office</strong>, or the <strong>Student Union Center</strong>.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Claim Submission & Uploader Review Station (5 cols) -->
+        <div class="lg:col-span-5 space-y-6">
+
+            <!-- SECTION 1: REQUEST PRODUCT BY SUBMITTING PROOF (For Claimant) -->
+            {% if item.status != 'resolved' %}
+                <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-7 space-y-5">
+                    <div class="border-b border-slate-100 pb-4">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700 mb-2">
+                            🔍 Is this your item?
+                        </span>
+                        <h2 class="text-xl font-extrabold text-slate-900">
+                            Request Item with Proof
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                            To ensure the item returns to the true owner, describe distinctive proof that only you would know.
+                        </p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('submit_claim', item_id=item.id) }}" enctype="multipart/form-data" class="space-y-4">
+                        
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                Your Name <span class="text-rose-500">*</span>
+                            </label>
+                            <input 
+                                type="text" 
+                                name="claimant_name" 
+                                required 
+                                placeholder="e.g. Maya Krishnan"
+                                class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            >
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    Campus Email <span class="text-rose-500">*</span>
+                                </label>
+                                <input 
+                                    type="email" 
+                                    name="claimant_email" 
+                                    required 
+                                    placeholder="maya@campus.edu"
+                                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                >
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    Student ID / Roll No.
+                                </label>
+                                <input 
+                                    type="text" 
+                                    name="claimant_student_id" 
+                                    placeholder="STU-2024-1122"
+                                    class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                >
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                Phone / WhatsApp
+                            </label>
+                            <input 
+                                type="tel" 
+                                name="claimant_phone" 
+                                placeholder="+91 98111 22334"
+                                class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                            >
+                        </div>
+
+                        <!-- Proof of Ownership Field -->
+                        <div class="bg-amber-50/70 border border-amber-200 rounded-2xl p-4 space-y-2">
+                            <label class="block text-xs font-bold text-amber-950">
+                                Detailed Proof of Ownership <span class="text-rose-500">*</span>
+                            </label>
+                            <p class="text-[11px] text-amber-800">
+                                Describe identifying features not visible in the public listing. For example:
+                                <ul class="list-disc pl-4 text-[11px] text-amber-900 space-y-0.5">
+                                    <li>Phone: lock screen image, scratch on bezel, case model</li>
+                                    <li>Wallet: exact IDs inside, card types, coin compartment contents</li>
+                                    <li>Device: serial number, engraved initials, bluetooth device name</li>
+                                    <li>Bag: books, keychain charms, inside zipper contents</li>
+                                </ul>
+                            </p>
+                            <textarea 
+                                name="proof_description" 
+                                rows="4" 
+                                required
+                                placeholder="Describe your proof in detail here..."
+                                class="w-full px-3 py-2 rounded-xl border border-amber-300 bg-white text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                            ></textarea>
+                        </div>
+
+                        <!-- File Proof Upload -->
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                Attach Supporting Proof (Optional)
+                            </label>
+                            <input 
+                                type="file" 
+                                name="proof_file" 
+                                accept="image/*,.pdf"
+                                class="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 cursor-pointer"
+                            >
+                            <p class="text-[11px] text-slate-400 mt-1">Upload a purchase invoice, photo of you with the item, or ID card.</p>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md shadow-blue-500/25 transition-all">
+                            Submit Claim with Proof
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+
+            <!-- SECTION 2: UPLOADER / FINDER CLAIM REVIEW STATION -->
+            <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-7 space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 mb-1">
+                            🔒 Uploader Portal
+                        </span>
+                        <h2 class="text-lg font-extrabold text-slate-900">
+                            Manage & Verify Claims
+                        </h2>
+                    </div>
+
+                    {% if is_authorized %}
+                        <a href="{{ url_for('logout_admin', item_id=item.id) }}" class="text-xs font-semibold text-rose-600 hover:text-rose-800">
+                            Lock Session
+                        </a>
+                    {% endif %}
+                </div>
+
+                {% if not is_authorized %}
+                    <!-- PIN Unlock Box -->
+                    <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200/80 text-center space-y-3">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center mx-auto">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-800">Are you {{ item.contact_name }}?</p>
+                            <p class="text-xs text-slate-500 mt-0.5">
+                                Enter your 4-digit PIN (default demo: <span class="font-mono font-bold text-blue-600">1234</span>) to view submitted proofs and approve the owner.
+                            </p>
+                        </div>
+
+                        <form method="POST" action="{{ url_for('verify_pin', item_id=item.id) }}" class="flex items-center justify-center gap-2 pt-1">
+                            <input 
+                                type="password" 
+                                name="secret_pin" 
+                                placeholder="PIN" 
+                                required 
+                                maxlength="8"
+                                class="w-24 text-center tracking-widest font-mono font-bold text-sm px-3 py-2 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+                            >
+                            <button type="submit" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow-sm transition-colors">
+                                Unlock Claims
+                            </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <!-- Authorized Claims View -->
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-slate-700">Submitted Claims ({{ claims|length }})</span>
+                            <span class="text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded-md">✓ Verified as Uploader</span>
+                        </div>
+
+                        {% if claims %}
+                            <div class="space-y-4">
+                                {% for claim in claims %}
+                                    <div class="p-4 rounded-2xl border transition-all
+                                        {% if claim.status == 'approved' %} bg-emerald-50/70 border-emerald-300
+                                        {% elif claim.status == 'rejected' %} bg-slate-50 border-slate-200 opacity-60
+                                        {% else %} bg-white border-blue-200 shadow-sm {% endif %}">
+                                        
+                                        <div class="flex items-start justify-between gap-2">
+                                            <div>
+                                                <h4 class="font-bold text-sm text-slate-900">{{ claim.claimant_name }}</h4>
+                                                <p class="text-[11px] text-slate-500">
+                                                    {{ claim.claimant_email }}
+                                                    {% if claim.claimant_student_id %} • {{ claim.claimant_student_id }}{% endif %}
+                                                    {% if claim.claimant_phone %} • {{ claim.claimant_phone }}{% endif %}
+                                                </p>
+                                            </div>
+
+                                            <div>
+                                                {% if claim.status == 'approved' %}
+                                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-600 text-white">
+                                                        Approved Owner
+                                                    </span>
+                                                {% elif claim.status == 'rejected' %}
+                                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-600 text-white">
+                                                        Rejected
+                                                    </span>
+                                                {% else %}
+                                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white">
+                                                        Pending Proof Review
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <!-- Proof Description Box -->
+                                        <div class="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                                            <p class="font-bold text-slate-700 text-[11px] uppercase tracking-wider mb-1">Proof Submitted:</p>
+                                            <p class="text-slate-800 leading-relaxed italic">
+                                                "{{ claim.proof_description }}"
+                                            </p>
+
+                                            {% if claim.proof_image_url %}
+                                                <div class="mt-2 pt-2 border-t border-slate-200">
+                                                    <a href="{{ claim.proof_image_url }}" target="_blank" class="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-[11px] font-semibold underline">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                                        <span>View Attached Proof File</span>
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Actions if still pending -->
+                                        {% if claim.status == 'pending' %}
+                                            <div class="mt-3 flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                                                <!-- Reject Form -->
+                                                <form method="POST" action="{{ url_for('claim_action', claim_id=claim.id) }}" onsubmit="return confirm('Are you sure you want to decline this claim?');">
+                                                    <input type="hidden" name="action" value="reject">
+                                                    <button type="submit" class="px-3 py-1.5 bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-700 font-semibold text-xs rounded-lg transition-colors">
+                                                        Decline Proof
+                                                    </button>
+                                                </form>
+
+                                                <!-- Approve Form -->
+                                                <form method="POST" action="{{ url_for('claim_action', claim_id=claim.id) }}" onsubmit="return confirm('Confirming this will mark the item as Reunited and accept this claimant as the true owner. Proceed?');">
+                                                    <input type="hidden" name="action" value="approve">
+                                                    <button type="submit" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg shadow-sm transition-colors flex items-center gap-1">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                        <span>Accept Proof & Mark Reunited</span>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        {% elif claim.decision_notes %}
+                                            <p class="text-[11px] text-slate-500 mt-2">
+                                                Note: {{ claim.decision_notes }}
+                                            </p>
+                                        {% endif %}
+
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="p-6 text-center text-slate-400 text-xs bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+                                No claims have been submitted yet for this item.
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

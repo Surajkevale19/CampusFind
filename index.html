@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Marketplace Feed - Campus Lost & Found{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+
+    <!-- Hero Header & Stats -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 rounded-3xl text-white p-8 md:p-10 shadow-xl shadow-blue-900/10">
+        <!-- Background decorative circles -->
+        <div class="absolute -right-16 -top-16 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute right-1/3 -bottom-20 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-3xl">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/20 border border-blue-400/30 text-blue-200 mb-3">
+                🎓 Campus Community Network
+            </span>
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white mb-3">
+                Lost something on campus? Or found someone’s belongings?
+            </h1>
+            <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+                Browse the marketplace feed below. If you spot your item, click into it and submit <span class="text-amber-300 font-semibold">proof of ownership</span> to verify and coordinate a safe return.
+            </p>
+        </div>
+
+        <!-- Quick Stats Grid -->
+        <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-8 border-t border-slate-700/60">
+            <div class="bg-white/5 backdrop-blur rounded-2xl p-4 border border-white/10">
+                <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Listings</p>
+                <p class="text-2xl font-bold text-white mt-1">{{ stats.total }}</p>
+            </div>
+            <div class="bg-white/5 backdrop-blur rounded-2xl p-4 border border-white/10">
+                <p class="text-xs font-medium text-emerald-400 uppercase tracking-wider">Found & Waiting</p>
+                <p class="text-2xl font-bold text-emerald-400 mt-1">{{ stats.found }}</p>
+            </div>
+            <div class="bg-white/5 backdrop-blur rounded-2xl p-4 border border-white/10">
+                <p class="text-xs font-medium text-amber-400 uppercase tracking-wider">Lost / Missing</p>
+                <p class="text-2xl font-bold text-amber-400 mt-1">{{ stats.lost }}</p>
+            </div>
+            <div class="bg-white/5 backdrop-blur rounded-2xl p-4 border border-white/10">
+                <p class="text-xs font-medium text-purple-300 uppercase tracking-wider">Reunited Items</p>
+                <p class="text-2xl font-bold text-purple-300 mt-1">{{ stats.resolved }} 🎉</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm space-y-4">
+        <form method="GET" action="{{ url_for('index') }}" class="space-y-4">
+            <!-- Search row -->
+            <div class="flex flex-col md:flex-row gap-3">
+                <div class="relative flex-grow">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <input 
+                        type="text" 
+                        name="q" 
+                        value="{{ query }}" 
+                        placeholder="Search items, keywords, or location (e.g. 'AirPods', 'Library', 'Calculator')..." 
+                        class="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm transition-all"
+                    >
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="submit" class="w-full md:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <span>Search</span>
+                    </button>
+                    {% if query or item_type != 'all' or category != 'all' or status != 'all' %}
+                        <a href="{{ url_for('index') }}" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium text-sm rounded-xl transition-colors">
+                            Reset
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Filter pills and selectors -->
+            <div class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-100 text-sm">
+                <!-- Type pills -->
+                <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+                    <a href="{{ url_for('index', q=query, type='all', category=category, status=status) }}" 
+                       class="px-3.5 py-1.5 rounded-lg font-medium text-xs transition-all {{ 'bg-white text-slate-900 shadow-sm' if item_type == 'all' else 'text-slate-600 hover:text-slate-900' }}">
+                        All Listings
+                    </a>
+                    <a href="{{ url_for('index', q=query, type='found', category=category, status=status) }}" 
+                       class="px-3.5 py-1.5 rounded-lg font-medium text-xs transition-all flex items-center gap-1.5 {{ 'bg-emerald-600 text-white shadow-sm' if item_type == 'found' else 'text-slate-600 hover:text-emerald-700' }}">
+                        <span class="w-2 h-2 rounded-full {{ 'bg-white' if item_type == 'found' else 'bg-emerald-500' }}"></span>
+                        Found Items
+                    </a>
+                    <a href="{{ url_for('index', q=query, type='lost', category=category, status=status) }}" 
+                       class="px-3.5 py-1.5 rounded-lg font-medium text-xs transition-all flex items-center gap-1.5 {{ 'bg-amber-600 text-white shadow-sm' if item_type == 'lost' else 'text-slate-600 hover:text-amber-700' }}">
+                        <span class="w-2 h-2 rounded-full {{ 'bg-white' if item_type == 'lost' else 'bg-amber-500' }}"></span>
+                        Lost Items
+                    </a>
+                </div>
+
+                <!-- Dropdowns -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <!-- Category dropdown -->
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs font-semibold text-slate-500">Category:</label>
+                        <select name="category" onchange="this.form.submit()" class="text-xs font-medium rounded-lg border border-slate-300 py-1.5 px-2.5 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <option value="all" {% if category == 'all' %}selected{% endif %}>All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Status dropdown -->
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs font-semibold text-slate-500">Status:</label>
+                        <select name="status" onchange="this.form.submit()" class="text-xs font-medium rounded-lg border border-slate-300 py-1.5 px-2.5 bg-white text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <option value="all" {% if status == 'all' %}selected{% endif %}>All Statuses</option>
+                            <option value="open" {% if status == 'open' %}selected{% endif %}>Open (Available)</option>
+                            <option value="claim_pending" {% if status == 'claim_pending' %}selected{% endif %}>Claim Pending</option>
+                            <option value="resolved" {% if status == 'resolved' %}selected{% endif %}>Reunited 🎉</option>
+                        </select>
+                    </div>
+
+                    <!-- Hidden inputs to retain current filters on submit -->
+                    <input type="hidden" name="type" value="{{ item_type }}">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Listings Feed Section -->
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                <span>Active Marketplace Items</span>
+                <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">
+                    {{ items|length }} {{ 'item' if items|length == 1 else 'items' }}
+                </span>
+            </h2>
+        </div>
+
+        {% if items %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for item in items %}
+                    <div class="bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:shadow-md transition-all flex flex-col overflow-hidden group">
+                        
+                        <!-- Item Image Banner -->
+                        <div class="relative h-48 bg-slate-100 overflow-hidden">
+                            {% if item.image_url %}
+                                <img src="{{ item.image_url }}" alt="{{ item.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                            {% else %}
+                                <div class="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-100">
+                                    <svg class="w-12 h-12 stroke-[1.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span class="text-xs font-medium mt-1 text-slate-400">{{ item.category }}</span>
+                                </div>
+                            {% endif %}
+
+                            <!-- Type Tag (Found vs Lost) -->
+                            <div class="absolute top-3 left-3 flex gap-1.5">
+                                {% if item.item_type == 'found' %}
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-600 text-white shadow-md shadow-emerald-900/20">
+                                        Found
+                                    </span>
+                                {% else %}
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-600 text-white shadow-md shadow-amber-900/20">
+                                        Lost
+                                    </span>
+                                {% endif %}
+
+                                <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/90 backdrop-blur text-slate-800 shadow-sm">
+                                    {{ item.category }}
+                                </span>
+                            </div>
+
+                            <!-- Status Badge -->
+                            <div class="absolute top-3 right-3">
+                                {% if item.status == 'resolved' %}
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-600 text-white shadow-md">
+                                        Reunited 🎉
+                                    </span>
+                                {% elif item.status == 'claim_pending' %}
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-md">
+                                        Proof Review
+                                    </span>
+                                {% else %}
+                                    <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white shadow-md">
+                                        Available
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="p-5 flex flex-col flex-grow">
+                            <!-- Title -->
+                            <h3 class="font-bold text-lg text-slate-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                                <a href="{{ url_for('item_detail', item_id=item.id) }}">
+                                    {{ item.title }}
+                                </a>
+                            </h3>
+
+                            <!-- Location & Date metadata -->
+                            <div class="mt-2.5 space-y-1 text-xs text-slate-500">
+                                <div class="flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    <span class="truncate">{{ item.location }}</span>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <span>{{ item.date_occurred }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Description Snippet -->
+                            <p class="mt-3 text-xs text-slate-600 line-clamp-2 leading-relaxed flex-grow">
+                                {{ item.description }}
+                            </p>
+
+                            <!-- Card Footer / Action Button -->
+                            <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+                                <span class="text-xs text-slate-400">
+                                    Listed by {{ item.contact_name.split(' ')[0] }}
+                                </span>
+
+                                <a href="{{ url_for('item_detail', item_id=item.id) }}" 
+                                   class="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all
+                                   {% if item.item_type == 'found' and item.status != 'resolved' %}
+                                        bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white
+                                   {% elif item.status == 'resolved' %}
+                                        bg-purple-50 text-purple-700 hover:bg-purple-600 hover:text-white
+                                   {% else %}
+                                        bg-slate-100 text-slate-700 hover:bg-slate-800 hover:text-white
+                                   {% endif %}">
+                                    {% if item.item_type == 'found' and item.status != 'resolved' %}
+                                        <span>Claim Item</span>
+                                    {% else %}
+                                        <span>View Details</span>
+                                    {% endif %}
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center max-w-lg mx-auto">
+                <div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-1">No items found</h3>
+                <p class="text-sm text-slate-500 mb-6">
+                    No items match your active filters or search terms. Try loosening your search or be the first to report this item!
+                </p>
+                <div class="flex items-center justify-center gap-3">
+                    <a href="{{ url_for('index') }}" class="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
+                        Clear Filters
+                    </a>
+                    <a href="{{ url_for('post_item') }}" class="px-4 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm transition-colors">
+                        Upload New Item
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Verification Guidelines & Safe Handover - Campus Lost & Found{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+
+    <div class="text-center max-w-2xl mx-auto">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 mb-3">
+            🛡️ Safe Exchange Protocols
+        </span>
+        <h1 class="text-3xl font-extrabold text-slate-950 tracking-tight">
+            How Proof of Ownership Works
+        </h1>
+        <p class="text-slate-600 text-sm mt-2 leading-relaxed">
+            CampusFind prevents dishonest claims by requiring specific, non-public details before any lost item is handed over. Here is the recommended protocol.
+        </p>
+    </div>
+
+    <!-- 3 Pillars Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xl">
+                1
+            </div>
+            <h3 class="font-bold text-slate-900 text-base">Keep Secrets Hidden</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                When uploading a found item, do <strong>not</strong> post photos of serial numbers, lock screens, exact coin counts, or inside pockets. Keep those details as test questions.
+            </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xl">
+                2
+            </div>
+            <h3 class="font-bold text-slate-900 text-base">Submit Verifiable Proof</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Claimants must describe matching scratches, Bluetooth device names, sticker sets, purchase receipts, or unlock the device in front of the finder.
+            </p>
+        </div>
+
+        <div class="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xl">
+                3
+            </div>
+            <h3 class="font-bold text-slate-900 text-base">Meet in Public Zones</h3>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                Never hand over valuable items in private or remote dorms. Only hand over items in monitored campus hubs like the Library Desk or Security Desk.
+            </p>
+        </div>
+    </div>
+
+    <!-- Detailed Checklist -->
+    <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
+        <h2 class="text-xl font-bold text-slate-900">Valid Proof Examples by Category</h2>
+
+        <div class="space-y-4 text-xs">
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    📱 Smartphones, Tablets & Laptops
+                </h4>
+                <p class="text-slate-600 leading-relaxed">
+                    <strong>Valid Proof:</strong> Unlocking the screen passcode or fingerprint in person, stating the exact wallpaper image, or matching the IMEI / serial number found on the original purchase box or bill.
+                </p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    💳 Wallets, Purses & IDs
+                </h4>
+                <p class="text-slate-600 leading-relaxed">
+                    <strong>Valid Proof:</strong> Stating the student ID number or name on cards inside before seeing them, describing unusual contents (family photo, specific currency note, library cards).
+                </p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    🎧 Headphones, AirPods & Calculators
+                </h4>
+                <p class="text-slate-600 leading-relaxed">
+                    <strong>Valid Proof:</strong> Pairing automatically to the claimant's phone, showing the Bluetooth name (e.g., "Aarav's AirPods"), or naming specific stickers, engravings, or battery cover markings.
+                </p>
+            </div>
+
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-1.5">
+                <h4 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    🔑 Keys & Personal Accessories
+                </h4>
+                <p class="text-slate-600 leading-relaxed">
+                    <strong>Valid Proof:</strong> Number of keys, specific brand names on keys, description of keychains, lanyards, or gym tags.
+                </p>
+            </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+            <span class="text-xs text-slate-500">Ready to find or report an item?</span>
+            <a href="{{ url_for('post_item') }}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow transition-colors">
+                Report an Item Now
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
